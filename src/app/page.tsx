@@ -209,6 +209,22 @@ export default function Home() {
               onChange={(event) => setMonthlyBill(Number(event.target.value))}
               className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3"
             />
+            <input
+              type="range"
+              min={80}
+              max={1200}
+              step={10}
+              value={monthlyBill}
+              onChange={(event) => setMonthlyBill(Number(event.target.value))}
+              className="accent-[var(--solar)]"
+            />
+            <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+              <span>80€</span>
+              <span className="text-[var(--foreground)]">
+                {monthlyBill}€
+              </span>
+              <span>1200€</span>
+            </div>
             <div className="rounded-2xl border border-[var(--line)] bg-[var(--cream)] px-4 py-3 text-sm">
               Risparmio stimato: <strong>85%</strong>
             </div>
