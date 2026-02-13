@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
+import Image from "next/image";
 
 const SAVINGS_RATE = 0.85;
 
@@ -21,10 +22,33 @@ export default function Home() {
     abitazione: "",
     consumi: "",
     bolletta: "",
+    tipologia: "",
+    kw: "",
     email: "",
     telefono: "",
   });
   const [formSent, setFormSent] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+
+  const isStepValid = (step: number) => {
+    if (step === 1) {
+      return formData.nome.trim() !== "" && formData.cognome.trim() !== "";
+    }
+    if (step === 2) {
+      return formData.tipologia.trim() !== "" && formData.kw.trim() !== "";
+    }
+    if (step === 3) {
+      return true;
+    }
+    if (step === 4) {
+      return (
+        formData.email.trim() !== "" &&
+        formData.telefono.trim() !== "" &&
+        privacyAccepted
+      );
+    }
+    return false;
+  };
 
   const annualCost = useMemo(() => monthlyBill * 12, [monthlyBill]);
   const annualSavings = useMemo(
@@ -42,67 +66,64 @@ export default function Home() {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
+    if (!isStepValid(4)) {
+      return;
+    }
     setFormSent(true);
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <header className="solar-gradient grain border-b border-[var(--line)]">
-        <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--foreground)] text-[var(--cream)] font-semibold">
-              GF
+    <div className="page-bg min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+      <header>
+        <div className="border-b border-[var(--line)] bg-[#4d4d4d]">
+          <nav className="mx-auto flex w-full items-center justify-center px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="relative h-[110px] w-[110px]">
+                <Image src="/logo.png" alt="GFS Solution" fill className="object-contain" />
+              </div>
             </div>
-            <div>
-              <p className="font-display text-lg">GFS Solution 2026</p>
-              <p className="text-xs uppercase tracking-[0.2em] text-[var(--ink-muted)]">
-                Fotovoltaico Intelligente
-              </p>
-            </div>
-          </div>
-          <div className="hidden items-center gap-3 md:flex">
-            <a
-              href="#simulazione"
-              className="rounded-full border border-[var(--foreground)] px-5 py-2 text-sm font-semibold transition hover:bg-[var(--foreground)] hover:text-[var(--cream)]"
-            >
-              Calcola il tuo risparmio
-            </a>
-            <a
-              href="#lead"
-              className="rounded-full bg-[var(--solar)] px-5 py-2 text-sm font-semibold text-[var(--foreground)] shadow-lg transition hover:bg-[var(--solar-deep)]"
-            >
-              Richiedi una consulenza
-            </a>
-          </div>
-        </nav>
+          </nav>
+        </div>
 
-        <section className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 pb-16 pt-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <section className="solar-gradient grain mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 pb-16 pt-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.4em] text-[var(--leaf)]">
+            <p
+              className="text-fade-rise text-sm font-semibold uppercase tracking-[0.4em] text-[var(--leaf)]"
+              style={{ animationDelay: "0.05s" }}
+            >
               Energia solare per la tua casa
             </p>
-            <h1 className="font-display text-4xl leading-tight text-[var(--foreground)] sm:text-5xl">
+            <h1
+              className="text-fade-rise font-display text-4xl leading-tight text-[var(--foreground)] sm:text-5xl text-shimmer"
+              style={{ animationDelay: "0.15s" }}
+            >
               Scopri subito quanto puoi risparmiare
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-[var(--ink-muted)]">
+            <p
+              className="text-fade-rise mt-4 max-w-xl text-lg text-[var(--ink-muted)]"
+              style={{ animationDelay: "0.25s" }}
+            >
               Inserisci la tua spesa mensile attuale e ti mostriamo il risparmio
               stimato con un impianto fotovoltaico.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div
+              className="text-fade-rise mt-8 flex flex-col gap-3 sm:flex-row"
+              style={{ animationDelay: "0.35s" }}
+            >
               <a
-                href="#simulazione"
-                className="focus-ring rounded-full bg-[var(--foreground)] px-7 py-3 text-center text-sm font-semibold text-[var(--cream)] transition hover:translate-y-[-1px]"
+                href="tel:800684460"
+                className="focus-ring rounded-full bg-[#2ecc71] px-7 py-3 text-center text-sm font-semibold text-white transition hover:translate-y-[-1px] hover:bg-[#27ae60]"
               >
-                Vai al simulatore
+                Numero verde 800 684460
               </a>
               <a
                 href="#lead"
                 className="focus-ring rounded-full border border-[var(--foreground)] px-7 py-3 text-center text-sm font-semibold transition hover:bg-[var(--foreground)] hover:text-[var(--cream)]"
               >
-                Richiedi una consulenza
+                Richiedi un preventivo
               </a>
             </div>
-            <div className="mt-10 flex flex-wrap gap-4 text-xs uppercase tracking-[0.3em] text-[var(--ink-muted)]">
+            <div className="text-fade-rise mt-10 flex flex-wrap gap-4 text-xs uppercase tracking-[0.3em] text-[var(--ink-muted)]">
               <span>Padova e provincia</span>
               <span>Progettazione certificata</span>
               <span>Gestione incentivi</span>
@@ -111,45 +132,150 @@ export default function Home() {
           <div className="relative">
             <div className="absolute -right-10 top-10 h-48 w-48 rounded-full bg-[var(--solar)] opacity-30 blur-3xl" />
             <div className="card-glow relative overflow-hidden rounded-3xl border border-[var(--line)] bg-white p-6">
-              <svg viewBox="0 0 520 420" className="h-64 w-full">
-                <defs>
-                  <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stopColor="#1a3552" />
-                    <stop offset="1" stopColor="#0f1f33" />
-                  </linearGradient>
-                </defs>
-                <rect x="40" y="40" width="440" height="260" rx="20" fill="#13263f" />
-                <g opacity="0.8">
-                  {[0, 1, 2, 3].map((row) => (
-                    <g key={row}>
-                      {[0, 1, 2, 3].map((col) => (
-                        <rect
-                          key={`${row}-${col}`}
-                          x={70 + col * 95}
-                          y={70 + row * 55}
-                          width="80"
-                          height="40"
-                          rx="6"
-                          fill="url(#panel)"
-                          stroke="#25466b"
-                        />
-                      ))}
-                    </g>
-                  ))}
-                </g>
-                <circle cx="420" cy="70" r="35" fill="#f6b416" />
-                <path
-                  d="M80 340c60-25 140-20 200 5 70 30 130 20 200-10"
-                  stroke="#1f7a57"
-                  strokeWidth="18"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="mt-4 flex items-center justify-between text-sm text-[var(--ink-muted)]">
-                <span>Monitoraggio produzione in tempo reale</span>
-                <span className="rounded-full bg-[var(--leaf)] px-3 py-1 text-[var(--cream)]">
+              <div className="flex items-center justify-between">
+                <span className="rounded-full bg-[var(--sun)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--foreground)]">
                   Eco-smart
                 </span>
+              </div>
+              <h3 className="mt-4 inline-flex rounded-2xl bg-[var(--sun)] px-4 py-2 font-display text-2xl text-[var(--foreground)]">
+                Andamento dei costi nel tempo
+              </h3>
+              <p className="mt-2 text-sm text-[var(--ink-muted)]">
+                Il fotovoltaico mantiene la spesa bassa, mentre la rete elettrica
+                resta alta e crescente.
+              </p>
+              <svg viewBox="0 0 520 340" className="mt-5 h-56 w-full">
+                <defs>
+                  <linearGradient id="lineSolar" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stopColor="#2f9e6f" />
+                    <stop offset="1" stopColor="#1c7ca6" />
+                  </linearGradient>
+                  <linearGradient id="lineGrid" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stopColor="#ffb347" />
+                    <stop offset="1" stopColor="#ff7a59" />
+                  </linearGradient>
+                </defs>
+                <rect x="20" y="20" width="480" height="260" rx="22" fill="#f7fbff" />
+                {[0, 1, 2, 3, 4].map((row) => (
+                  <line
+                    key={`grid-row-${row}`}
+                    x1="50"
+                    y1={60 + row * 45}
+                    x2="470"
+                    y2={60 + row * 45}
+                    stroke="#d9e8df"
+                    strokeDasharray="4 10"
+                  />
+                ))}
+                {[0, 1, 2, 3, 4].map((col) => (
+                  <line
+                    key={`grid-col-${col}`}
+                    x1={50 + col * 105}
+                    y1="60"
+                    x2={50 + col * 105}
+                    y2="240"
+                    stroke="#e6f0ea"
+                  />
+                ))}
+                <path
+                  className="chart-line chart-line-grid"
+                  d="M50 220 C100 170, 140 235, 190 160 C240 110, 300 220, 350 145 C400 90, 430 210, 470 130"
+                  stroke="url(#lineGrid)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <path
+                  className="chart-line chart-line-solar"
+                  d="M50 210 C140 214, 230 216, 320 214 C390 212, 430 213, 470 212"
+                  stroke="url(#lineSolar)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                {[
+                  { x: 50, y: 220 },
+                  { x: 140, y: 235 },
+                  { x: 240, y: 110 },
+                  { x: 350, y: 145 },
+                  { x: 470, y: 130 },
+                ].map((point, index) => (
+                  <circle
+                    key={`grid-dot-${point.x}`}
+                    cx={point.x}
+                    cy={point.y}
+                    r="6"
+                    fill="#ff8f4f"
+                    stroke="#ffffff"
+                    strokeWidth="2"
+                    className="chart-dot"
+                    style={{ animationDelay: `${0.4 + index * 0.08}s` }}
+                  />
+                ))}
+                {[
+                  { x: 50, y: 210 },
+                  { x: 165, y: 214 },
+                  { x: 280, y: 216 },
+                  { x: 395, y: 213 },
+                  { x: 470, y: 212 },
+                ].map((point, index) => (
+                  <circle
+                    key={`solar-dot-${point.x}`}
+                    cx={point.x}
+                    cy={point.y}
+                    r="6"
+                    fill="#2f9e6f"
+                    stroke="#ffffff"
+                    strokeWidth="2"
+                    className="chart-dot"
+                    style={{ animationDelay: `${0.7 + index * 0.08}s` }}
+                  />
+                ))}
+                <text x="50" y="270" fill="#6b7b72" fontSize="12">
+                  kWh/anno
+                </text>
+                <text x="420" y="270" fill="#6b7b72" fontSize="12">
+                  €/mese
+                </text>
+                <text
+                  x="30"
+                  y="55"
+                  fill="#6b7b72"
+                  fontSize="11"
+                  transform="rotate(-90 30 55)"
+                >
+                  Spesa annua
+                </text>
+              </svg>
+              <div className="mt-5 grid gap-3 rounded-2xl border border-[var(--line)] bg-[var(--cream)] p-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[var(--sun-deep)]" />
+                    <span className="text-[var(--ink-muted)]">
+                      Rete elettrica (€/mese)
+                    </span>
+                  </div>
+                  <span className="font-semibold">{formatEuro(monthlyBill)} / mese</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[var(--leaf)]" />
+                    <span className="text-[var(--ink-muted)]">
+                      Fotovoltaico (€/mese)
+                    </span>
+                  </div>
+                  <span className="font-semibold">
+                    {formatEuro(Math.round(newAnnualCost / 12))} / mese
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-dashed border-[var(--line)] pt-3 text-[var(--foreground)]">
+                  <span className="font-semibold">
+                    Risparmio fotovoltaico vs rete
+                  </span>
+                    <span className="font-display text-lg text-shimmer">
+                      {formatEuro(Math.round(annualSavings / 12))} / mese
+                    </span>
+                </div>
               </div>
             </div>
           </div>
@@ -160,18 +286,20 @@ export default function Home() {
         {[
           {
             title: "Installazione chiavi in mano",
-            icon: "⚡",
-            desc: "Dalla progettazione all’avvio, seguiamo ogni fase.",
-          },
-          {
-            title: "Tecnici certificati",
             icon: "🛠️",
-            desc: "Squadre specializzate con standard di sicurezza elevati.",
+            desc:
+              "Dalla progettazione all’avvio, seguiamo ogni fase. Tempo stimato di installazione: 20 giorni dalla firma del contratto.",
           },
           {
             title: "Garanzia fino a 25 anni",
             icon: "🛡️",
-            desc: "Componenti selezionati per durare e proteggere il tuo investimento.",
+            desc:
+              "Componenti selezionati per durare e proteggere il tuo investimento.",
+          },
+          {
+            title: "Paghi solo a fine lavori",
+            icon: "💶",
+            desc: "Nessun anticipo: saldi l’intervento solo a installazione completata.",
           },
         ].map((item) => (
           <div
@@ -185,15 +313,251 @@ export default function Home() {
         ))}
       </section>
 
+      <section id="lead" className="mx-auto w-full max-w-6xl px-6 py-16">
+        <div className="form-spotlight relative overflow-hidden rounded-3xl border border-[#ffd24d] p-3">
+          <div className="form-panel grid gap-8 rounded-3xl bg-white p-8 lg:grid-cols-[1.1fr_0.9fr]">
+            <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--leaf)] text-fade-rise">
+              Un nostro consulente creerà una offerta dedicata
+            </p>
+            <h2 className="font-display text-3xl sm:text-4xl text-shimmer text-fade-rise">
+              Richiedi il tuo preventivo gratuito
+            </h2>
+            <p className="mt-3 text-[var(--ink-muted)]">
+              Compila il modulo e ricevi una valutazione con consumi reali,
+              incentivi disponibili e sopralluogo digitale.
+            </p>
+            <div className="mt-6">
+              <div className="relative h-2 w-full overflow-hidden rounded-full border border-[var(--line)] bg-[var(--cream)]">
+                <div
+                  className="h-full rounded-full bg-[var(--solar)] transition-all duration-300"
+                  style={{ width: `${(formStep / 4) * 100}%` }}
+                />
+                <div className="absolute inset-0 flex items-center justify-between px-1">
+                  {[1, 2, 3, 4].map((step) => (
+                    <span
+                      key={`tick-${step}`}
+                      className={`h-4 w-[2px] rounded-full ${
+                        formStep >= step ? "bg-[var(--foreground)]" : "bg-[var(--line)]"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            </div>
+            <form onSubmit={handleSubmit} className="grid gap-4">
+            {formSent ? (
+              <div className="rounded-2xl border border-[var(--line)] bg-[var(--cream)] p-6">
+                <p className="font-display text-2xl">Richiesta inviata!</p>
+                <p className="mt-2 text-sm text-[var(--ink-muted)]">
+                  Ti ricontatteremo al più presto con una proposta personalizzata.
+                </p>
+              </div>
+            ) : (
+              <>
+                {formStep === 1 && (
+                  <>
+                    <input
+                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3 text-base"
+                      placeholder="Nome"
+                      value={formData.nome}
+                      onChange={(event) => handleChange("nome", event.target.value)}
+                    />
+                    <input
+                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3 text-base"
+                      placeholder="Cognome"
+                      value={formData.cognome}
+                      onChange={(event) =>
+                        handleChange("cognome", event.target.value)
+                      }
+                    />
+                  </>
+                )}
+                {formStep === 2 && (
+                  <>
+                    <select
+                      className="focus-ring rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-base"
+                      value={formData.tipologia}
+                      onChange={(event) =>
+                        handleChange("tipologia", event.target.value)
+                      }
+                    >
+                      <option value="">Tipologia abitazione</option>
+                      <option value="casa-singola">Casa singola</option>
+                      <option value="bifamiliare">Bifamiliare</option>
+                      <option value="appartamento">Appartamento</option>
+                    </select>
+                    <select
+                      className="focus-ring rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-base"
+                      value={formData.kw}
+                      onChange={(event) => handleChange("kw", event.target.value)}
+                    >
+                      <option value="">kW installati</option>
+                      {[2, 3, 4, 5, 6, 7, 8].map((kw) => (
+                        <option key={kw} value={`${kw}`}>
+                          {kw} kW
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+                {formStep === 3 && (
+                  <>
+                    <div className="grid gap-2">
+                      <label className="text-sm font-semibold">
+                        Allega la bolletta (immagine)
+                      </label>
+                      <input
+                        className="focus-ring rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-base"
+                        type="file"
+                        accept="image/*"
+                      />
+                    </div>
+                  </>
+                )}
+                {formStep === 4 && (
+                  <>
+                    <input
+                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3 text-base"
+                      placeholder="Email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(event) => handleChange("email", event.target.value)}
+                    />
+                    <input
+                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3 text-base"
+                      placeholder="Telefono"
+                      type="tel"
+                      value={formData.telefono}
+                      onChange={(event) =>
+                        handleChange("telefono", event.target.value)
+                      }
+                    />
+                    <label className="flex items-start gap-3 text-sm leading-relaxed text-[var(--ink-muted)]">
+                      <input
+                        type="checkbox"
+                        className="mt-1"
+                        checked={privacyAccepted}
+                        onChange={(event) => setPrivacyAccepted(event.target.checked)}
+                        required
+                      />
+                      <span>
+                        Accetto la privacy policy e il trattamento dei dati personali.
+                      </span>
+                    </label>
+                  </>
+                )}
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <button
+                    type="button"
+                    disabled={formStep === 1}
+                    onClick={() => setFormStep((prev) => Math.max(prev - 1, 1))}
+                    className="w-full rounded-full border border-[var(--foreground)] px-5 py-2 text-sm font-semibold disabled:opacity-40 sm:w-auto"
+                  >
+                    Indietro
+                  </button>
+                  {formStep < 4 ? (
+                    <button
+                      type="button"
+                      disabled={!isStepValid(formStep)}
+                      onClick={() => setFormStep((prev) => Math.min(prev + 1, 4))}
+                      className={`w-full rounded-full px-5 py-2 text-sm font-semibold sm:w-auto ${
+                        isStepValid(formStep)
+                          ? "bg-[var(--foreground)] text-[var(--cream)]"
+                          : "cursor-not-allowed bg-[var(--line)] text-[var(--ink-muted)]"
+                      }`}
+                    >
+                      Continua
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      disabled={!isStepValid(4)}
+                      className={`w-full rounded-full px-6 py-2 text-sm font-semibold sm:w-auto ${
+                        isStepValid(4)
+                          ? "bg-[var(--solar)]"
+                          : "cursor-not-allowed bg-[var(--line)] text-[var(--ink-muted)]"
+                      }`}
+                    >
+                      Richiedi preventivo gratuito
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-6xl px-6 py-16">
+        <div className="grid gap-6">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--ocean)] text-fade-rise">
+              SERVIZI COMPLETI
+            </p>
+            <h2 className="font-display text-3xl sm:text-4xl text-fade-rise">
+              Un unico partner per ogni fase
+            </h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                title: "Consulenza gratuita",
+                icon: "💬",
+                desc: "Un primo incontro chiaro per capire bisogni, obiettivi e budget.",
+              },
+              {
+                title: "Analisi consumi e sopralluogo digitale",
+                icon: "📊",
+                desc: "Raccogliamo i dati reali per dimensionare l’impianto in modo preciso.",
+              },
+              {
+                title: "Progettazione impianto personalizzato",
+                icon: "📐",
+                desc: "Soluzione su misura per massimizzare resa, estetica e risparmio.",
+              },
+              {
+                title: "Installazione certificata",
+                icon: "🛠️",
+                desc: "Tecnici qualificati e lavori a regola d’arte con tempi certi.",
+              },
+              {
+                title: "Assistenza e manutenzione",
+                icon: "🧰",
+                desc: "Monitoraggio e supporto continuo per prestazioni sempre ottimali.",
+              },
+              {
+                title: "Gestione incentivi e detrazioni",
+                icon: "🧾",
+                desc: "Seguiamo tutta la pratica per ottenere bonus e agevolazioni.",
+              },
+            ].map((service) => (
+              <div
+                key={service.title}
+                className="rounded-2xl border border-[var(--line)] bg-white p-5"
+              >
+                <div className="text-2xl text-[var(--leaf)]">{service.icon}</div>
+                <p className="mt-3 font-semibold">{service.title}</p>
+                <p className="mt-2 text-sm text-[var(--ink-muted)]">
+                  {service.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section
         id="simulazione"
         className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-6 py-16 lg:grid-cols-[1fr_0.9fr]"
       >
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--ocean)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--ocean)] text-fade-rise">
             Simulazione semplice
           </p>
-          <h2 className="font-display text-3xl sm:text-4xl">
+          <h2 className="font-display text-3xl sm:text-4xl text-fade-rise">
             Inserisci la tua spesa mensile attuale
           </h2>
           <p className="mt-3 text-[var(--ink-muted)]">
@@ -236,7 +600,7 @@ export default function Home() {
             <p className="text-xs uppercase tracking-[0.3em] text-[var(--ink-muted)]">
               Risultato principale
             </p>
-            <p className="mt-3 font-display text-4xl">
+            <p className="mt-3 font-display text-4xl text-shimmer">
               {formatEuro(annualSavings)} / anno
             </p>
             <p className="mt-2 text-sm text-[var(--ink-muted)]">
@@ -266,171 +630,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="lead" className="mx-auto w-full max-w-6xl px-6 py-16">
-        <div className="grid gap-8 rounded-3xl border border-[var(--line)] bg-white p-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--leaf)]">
-              Vuoi una simulazione personalizzata?
-            </p>
-            <h2 className="font-display text-3xl sm:text-4xl">
-              Richiedi il tuo preventivo gratuito
-            </h2>
-            <p className="mt-3 text-[var(--ink-muted)]">
-              Compila il modulo e ricevi una valutazione con consumi reali,
-              incentivi disponibili e sopralluogo digitale.
-            </p>
-            <div className="mt-6 flex gap-3 text-xs uppercase tracking-[0.3em] text-[var(--ink-muted)]">
-              <span className={formStep === 1 ? "text-[var(--foreground)]" : ""}>
-                Step 1
-              </span>
-              <span className={formStep === 2 ? "text-[var(--foreground)]" : ""}>
-                Step 2
-              </span>
-              <span className={formStep === 3 ? "text-[var(--foreground)]" : ""}>
-                Step 3
-              </span>
-            </div>
-          </div>
-          <form onSubmit={handleSubmit} className="grid gap-4">
-            {formSent ? (
-              <div className="rounded-2xl border border-[var(--line)] bg-[var(--cream)] p-6">
-                <p className="font-display text-2xl">Richiesta inviata!</p>
-                <p className="mt-2 text-sm text-[var(--ink-muted)]">
-                  Ti ricontatteremo al più presto con una proposta personalizzata.
-                </p>
-              </div>
-            ) : (
-              <>
-                {formStep === 1 && (
-                  <>
-                    <input
-                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3"
-                      placeholder="Nome"
-                      value={formData.nome}
-                      onChange={(event) => handleChange("nome", event.target.value)}
-                    />
-                    <input
-                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3"
-                      placeholder="Cognome"
-                      value={formData.cognome}
-                      onChange={(event) =>
-                        handleChange("cognome", event.target.value)
-                      }
-                    />
-                  </>
-                )}
-                {formStep === 2 && (
-                  <>
-                    <input
-                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3"
-                      placeholder="Anagrafica abitazione"
-                      value={formData.abitazione}
-                      onChange={(event) =>
-                        handleChange("abitazione", event.target.value)
-                      }
-                    />
-                    <input
-                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3"
-                      placeholder="Consumi (kWh annui)"
-                      value={formData.consumi}
-                      onChange={(event) =>
-                        handleChange("consumi", event.target.value)
-                      }
-                    />
-                    <input
-                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3"
-                      placeholder="Bolletta media (€)"
-                      value={formData.bolletta}
-                      onChange={(event) =>
-                        handleChange("bolletta", event.target.value)
-                      }
-                    />
-                  </>
-                )}
-                {formStep === 3 && (
-                  <>
-                    <input
-                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3"
-                      placeholder="Email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(event) => handleChange("email", event.target.value)}
-                    />
-                    <input
-                      className="focus-ring rounded-xl border border-[var(--line)] px-4 py-3"
-                      placeholder="Telefono"
-                      type="tel"
-                      value={formData.telefono}
-                      onChange={(event) =>
-                        handleChange("telefono", event.target.value)
-                      }
-                    />
-                  </>
-                )}
-                <div className="mt-4 flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={formStep === 1}
-                    onClick={() => setFormStep((prev) => Math.max(prev - 1, 1))}
-                    className="rounded-full border border-[var(--foreground)] px-5 py-2 text-sm font-semibold disabled:opacity-40"
-                  >
-                    Indietro
-                  </button>
-                  {formStep < 3 ? (
-                    <button
-                      type="button"
-                      onClick={() => setFormStep((prev) => Math.min(prev + 1, 3))}
-                      className="rounded-full bg-[var(--foreground)] px-5 py-2 text-sm font-semibold text-[var(--cream)]"
-                    >
-                      Continua
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="rounded-full bg-[var(--solar)] px-6 py-2 text-sm font-semibold"
-                    >
-                      Richiedi preventivo gratuito
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
-          </form>
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-6xl px-6 py-16">
-        <div className="grid gap-6">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--ocean)]">
-              Servizi completi
-            </p>
-            <h2 className="font-display text-3xl sm:text-4xl">
-              Un unico partner per ogni fase
-            </h2>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              "Consulenza gratuita",
-              "Analisi consumi e sopralluogo digitale",
-              "Progettazione impianto personalizzato",
-              "Installazione certificata",
-              "Assistenza e manutenzione",
-              "Gestione incentivi e detrazioni",
-              "Paghi solo a fine lavori",
-            ].map((service) => (
-              <div
-                key={service}
-                className="rounded-2xl border border-[var(--line)] bg-white p-5"
-              >
-                <div className="h-8 w-8 rounded-full bg-[var(--solar)]" />
-                <p className="mt-3 font-semibold">{service}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <footer className="border-t border-[var(--line)] bg-white">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-10 text-sm text-[var(--ink-muted)] md:flex-row md:items-center md:justify-between">
           <div>
@@ -441,11 +640,17 @@ export default function Home() {
             <p>Sede legale: Via dell’Energia 12, 35100 Padova</p>
             <p>Contatti: info@gfssolution2026.it · 049 123 4567</p>
           </div>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-[var(--foreground)]">
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="https://gfssolutions.it/privacy-policy/"
+              className="rounded-full border border-[var(--foreground)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--foreground)] transition hover:bg-[var(--foreground)] hover:text-[var(--cream)]"
+            >
               Privacy
             </a>
-            <a href="#" className="hover:text-[var(--foreground)]">
+            <a
+              href="https://gfssolutions.it/cookie-policy/"
+              className="rounded-full border border-[var(--foreground)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--foreground)] transition hover:bg-[var(--foreground)] hover:text-[var(--cream)]"
+            >
               Cookie Policy
             </a>
           </div>

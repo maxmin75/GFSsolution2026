@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Manrope, Sora } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const display = Sora({
+const display = Plus_Jakarta_Sans({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-const body = Manrope({
+const body = Plus_Jakarta_Sans({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
