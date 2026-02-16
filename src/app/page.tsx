@@ -3,7 +3,8 @@
 import { useMemo, useState, type FormEvent } from "react";
 import Image from "next/image";
 
-const SAVINGS_RATE = 0.85;
+const SAVINGS_RATE_WITH_STORAGE = 0.85;
+const SAVINGS_RATE_NO_STORAGE = 0.74;
 
 const formatEuro = (value: number) =>
   value.toLocaleString("it-IT", {
@@ -14,6 +15,7 @@ const formatEuro = (value: number) =>
 
 export default function Home() {
   const [monthlyBill, setMonthlyBill] = useState(180);
+  const [storageMode, setStorageMode] = useState<"with" | "without">("with");
 
   const [formStep, setFormStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -29,6 +31,8 @@ export default function Home() {
   });
   const [formSent, setFormSent] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isStepValid = (step: number) => {
     if (step === 1) {
@@ -51,10 +55,16 @@ export default function Home() {
   };
 
   const annualCost = useMemo(() => monthlyBill * 12, [monthlyBill]);
-  const annualSavings = useMemo(
-    () => Math.round(annualCost * SAVINGS_RATE),
+  const annualSavingsWithStorage = useMemo(
+    () => Math.round(annualCost * SAVINGS_RATE_WITH_STORAGE),
     [annualCost],
   );
+  const annualSavingsNoStorage = useMemo(
+    () => Math.round(annualCost * SAVINGS_RATE_NO_STORAGE),
+    [annualCost],
+  );
+  const annualSavings =
+    storageMode === "with" ? annualSavingsWithStorage : annualSavingsNoStorage;
   const newAnnualCost = useMemo(
     () => Math.max(annualCost - annualSavings, 0),
     [annualCost, annualSavings],
@@ -64,12 +74,30 @@ export default function Home() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!isStepValid(4)) {
       return;
     }
-    setFormSent(true);
+    setIsSubmitting(true);
+    setSubmitError(null);
+    try {
+      const response = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error ?? "Invio non riuscito");
+      }
+      setFormSent(true);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Invio non riuscito";
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -434,6 +462,11 @@ export default function Home() {
                         handleChange("telefono", event.target.value)
                       }
                     />
+                    {submitError ? (
+                      <p className="rounded-2xl border border-[#f3b2b2] bg-[#fff4f4] px-4 py-3 text-sm text-[#b42318]">
+                        {submitError}
+                      </p>
+                    ) : null}
                     <label className="flex items-start gap-3 text-sm leading-relaxed text-[var(--ink-muted)]">
                       <input
                         type="checkbox"
@@ -473,14 +506,14 @@ export default function Home() {
                   ) : (
                     <button
                       type="submit"
-                      disabled={!isStepValid(4)}
+                      disabled={!isStepValid(4) || isSubmitting}
                       className={`w-full rounded-full px-6 py-2 text-sm font-semibold sm:w-auto ${
-                        isStepValid(4)
+                        isStepValid(4) && !isSubmitting
                           ? "bg-[var(--solar)]"
                           : "cursor-not-allowed bg-[var(--line)] text-[var(--ink-muted)]"
                       }`}
                     >
-                      Richiedi preventivo gratuito
+                      {isSubmitting ? "Invio in corso..." : "Richiedi preventivo gratuito"}
                     </button>
                   )}
                 </div>
@@ -561,9 +594,37 @@ export default function Home() {
             Inserisci la tua spesa mensile attuale
           </h2>
           <p className="mt-3 text-[var(--ink-muted)]">
-            Applichiamo una stima fissa di risparmio del 85%.
+            Applichiamo una stima fissa di risparmio del{" "}
+            {storageMode === "with" ? "85%" : "74%"}.
           </p>
           <div className="mt-6 grid gap-4 rounded-3xl border border-[var(--line)] bg-white p-6">
+            <div className="grid gap-2">
+              <label className="text-sm font-semibold">Sistema d’accumulo</label>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStorageMode("with")}
+                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                    storageMode === "with"
+                      ? "bg-[var(--foreground)] text-[var(--cream)]"
+                      : "border border-[var(--line)] text-[var(--ink-muted)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  Con accumulo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStorageMode("without")}
+                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                    storageMode === "without"
+                      ? "bg-[var(--foreground)] text-[var(--cream)]"
+                      : "border border-[var(--line)] text-[var(--ink-muted)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  Senza accumulo
+                </button>
+              </div>
+            </div>
             <label className="text-sm font-semibold">Spesa mensile (€)</label>
             <input
               type="number"
@@ -590,7 +651,8 @@ export default function Home() {
               <span>1200€</span>
             </div>
             <div className="rounded-2xl border border-[var(--line)] bg-[var(--cream)] px-4 py-3 text-sm">
-              Risparmio stimato: <strong>85%</strong>
+              Risparmio stimato:{" "}
+              <strong>{storageMode === "with" ? "85%" : "74%"}</strong>
             </div>
           </div>
         </div>
@@ -634,11 +696,31 @@ export default function Home() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-10 text-sm text-[var(--ink-muted)] md:flex-row md:items-center md:justify-between">
           <div>
             <p className="font-display text-lg text-[var(--foreground)]">
-              GFS Solution 2026
+              GFS S.r.l. ©2026
             </p>
-            <p>© 2026 · Tutti i diritti riservati</p>
-            <p>Sede legale: Via dell’Energia 12, 35100 Padova</p>
-            <p>Contatti: info@gfssolution2026.it · 049 123 4567</p>
+            <p>
+              Sede Legale: via San Prosdocimo 29, 35030 Cervarese Santa Croce
+              (PD)
+            </p>
+            <p>Pi. IT 050385302 - R.E.A. PD-43819682</p>
+            <p>
+              web:{" "}
+              <a
+                href="https://gfsolitions.it"
+                className="underline underline-offset-2 hover:text-[var(--foreground)]"
+              >
+                gfsolitions.it
+              </a>
+            </p>
+            <p>
+              mail:{" "}
+              <a
+                href="mailto:info.gfspreventivi@gmail.com"
+                className="underline underline-offset-2 hover:text-[var(--foreground)]"
+              >
+                info.gfspreventivi@gmail.com
+              </a>
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <a
