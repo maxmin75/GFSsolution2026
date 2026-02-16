@@ -665,10 +665,11 @@ export default function Home() {
             <p className="mt-4 font-display text-5xl text-shimmer sm:text-6xl">
               {formatEuro(annualSavings)} / anno
             </p>
-            <p className="mt-2 text-sm text-[var(--ink-muted)]">
-              Spesa annua attuale: {formatEuro(annualCost)} · Nuova spesa annua:
-              {" "}
-              {formatEuro(newAnnualCost)}
+            <p className="mt-3 text-sm text-[var(--ink-muted)]">
+              Spesa annua attuale: {formatEuro(annualCost)}
+              <span className="mt-2 block text-base font-semibold text-[var(--foreground)]">
+                Nuova spesa annua: {formatEuro(newAnnualCost)}
+              </span>
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
