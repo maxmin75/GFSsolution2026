@@ -659,10 +659,10 @@ export default function Home() {
 
         <div className="grid gap-4">
           <div className="card-glow rounded-3xl border border-[var(--line)] bg-[var(--cream)] p-6">
-            <p className="text-xs uppercase tracking-[0.3em] text-[var(--ink-muted)]">
-              Risultato principale
+            <p className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--ink-muted)]">
+              Risparmio annuo stimato
             </p>
-            <p className="mt-3 font-display text-4xl text-shimmer">
+            <p className="mt-4 font-display text-5xl text-shimmer sm:text-6xl">
               {formatEuro(annualSavings)} / anno
             </p>
             <p className="mt-2 text-sm text-[var(--ink-muted)]">
