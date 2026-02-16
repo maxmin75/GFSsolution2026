@@ -706,10 +706,10 @@ export default function Home() {
             <p>
               web:{" "}
               <a
-                href="https://gfsolitions.it"
+                href="https://gfssolutions.it"
                 className="underline underline-offset-2 hover:text-[var(--foreground)]"
               >
-                gfsolitions.it
+                gfssolutions.it
               </a>
             </p>
             <p>
